@@ -10,7 +10,8 @@
     },
     "permissions": [
         "*://developer.mozilla.org/*",
-        "webRequest"
+        "webRequest",
+        "storage"
     ],
     "browser_action": {
         "default_icon": "icons/mdn_logo.png",
