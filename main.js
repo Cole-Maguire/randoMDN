@@ -23,6 +23,32 @@ async function saveFilteredUrls() {
 
     return urls
 }
+
+function recurseSiteMap(obj, url) {
+    const current = url[0];
+    if (url.length === 1) {
+        return {}
+    }
+    if (!obj[current]) {
+        obj[current] = { _include: true }
+    }
+    return recurseSiteMap(obj[current], url.slice(1))
+}
+
+async function createNestedSiteMap() {
+    let urls = await getUrls();
+
+    //equivalent of getting rid of https://developer.mozilla.org/en-US/docs/
+    const splitUrl = urls.map(url => url.split('/').slice(5));
+
+    let allPaths = { _include: true };
+
+    splitUrl.forEach(url => {
+        recurseSiteMap(allPaths, url)
+    })
+
+    console.log(allPaths)
+}
 async function goToRandom() {
     const urlObj = await browser.storage.local.get('urls');
     const urls = urlObj["urls"];
