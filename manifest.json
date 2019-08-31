@@ -9,10 +9,22 @@
             "js/attach-events.js"
         ]
     },
+    "content_scripts": [
+        {
+            "matches": [
+                "*://developer.mozilla.org/*"
+            ],
+            "js": [
+                "js/main.js",
+                "js/add-button.js"
+            ]
+        }
+    ],
     "permissions": [
         "*://developer.mozilla.org/*",
         "webRequest",
-        "storage"
+        "storage",
+        "activeTab"
     ],
     "browser_action": {
         "default_icon": "icons/mdn_logo.png",
