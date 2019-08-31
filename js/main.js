@@ -23,15 +23,8 @@ async function saveFilteredUrls() {
 
     return urls
 }
-async function goToRandom() {
+async function getRandomUrl() {
     const urlObj = await browser.storage.local.get('urls');
     const urls = urlObj["urls"];
-    const randomUrl = urls[Math.floor(Math.random() * urls.length)]
-    browser.tabs.create({ url: randomUrl });
+    return urls[Math.floor(Math.random() * urls.length)]  
 }
-
-//On startup seems common enough for something not that likely to change
-browser.runtime.onStartup.addListener(saveFilteredUrls);
-//onInstalled makes debugging easier
-browser.runtime.onInstalled.addListener(saveFilteredUrls);
-browser.browserAction.onClicked.addListener(goToRandom);

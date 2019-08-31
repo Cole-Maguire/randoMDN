@@ -5,7 +5,8 @@
     "description": "Learn something new! Goes to a random MDN page at the press of a button ",
     "background": {
         "scripts": [
-            "main.js"
+            "js/main.js",
+            "js/attach-events.js"
         ]
     },
     "permissions": [
