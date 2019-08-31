@@ -5,7 +5,8 @@
     "description": "Learn something new! Goes to a random MDN page at the press of a button ",
     "background": {
         "scripts": [
-            "main.js"
+            "js/main.js",
+            "js/settings.js"
         ]
     },
     "permissions": [
@@ -16,5 +17,8 @@
     "browser_action": {
         "default_icon": "icons/mdn_logo.png",
         "default_title": "Random page!"
+    },
+    "options_ui": {
+        "page": "settings.html"
     }
 }
