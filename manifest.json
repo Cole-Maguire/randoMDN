@@ -3,6 +3,12 @@
     "name": "rMDN",
     "version": "0.1",
     "description": "Learn something new! Goes to a random MDN page at the press of a button ",
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "randomdn@colemaguire.me",
+            "strict_min_version": "62.0"
+        }
+    },
     "background": {
         "scripts": [
             "js/main.js",
@@ -29,5 +35,9 @@
     "browser_action": {
         "default_icon": "icons/mdn_logo.png",
         "default_title": "Random page!"
+    },
+    "options_ui": {
+        "page": "settings.html",
+        "browser_style": true
     }
 }
