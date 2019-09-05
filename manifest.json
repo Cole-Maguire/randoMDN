@@ -37,7 +37,7 @@
         "default_title": "Random page!"
     },
     "options_ui": {
-        "page": "settings.html",
+        "page": "html/settings.html",
         "browser_style": true
     }
 }
