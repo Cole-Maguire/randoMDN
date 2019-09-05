@@ -48,7 +48,17 @@ function saveSettings() {
 }
 function createElementFromMap(obj, parentName, depth) {
     //Possibly the worst function I've ever written
-    let entries = Object.entries(obj);
+    let entries = Object.entries(obj).sort((a, b) => {
+        //Alphabetical order based on the keys
+        if (a[0] > b[0]) {
+            return 1
+        } else if (a[0] < b[0]) {
+            return -1;
+        } else {
+            return 0
+        }
+    });
+
     if (entries.length > 1 && depth < 3) {
         let mapOut = entries.map(([key, child]) => {
             const next = `${parentName}/${key}`;
@@ -104,11 +114,11 @@ async function buildFromMap() {
         const matchSlugs = matchSlugsWrapper.matchSlugs;
 
         allChecks.forEach(checkbox => {
-             if(matchSlugs.includes(checkbox.getAttribute('key'))){
+            if (matchSlugs.includes(checkbox.getAttribute('key'))) {
                 //We wrap this in an if to prevent overwriting subscetions
                 checkbox.checked = true
                 indeterminateChecks(checkbox)
-             }
+            }
         })
     }
     else {
