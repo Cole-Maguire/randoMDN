@@ -91,6 +91,8 @@ function createElementFromMap(obj, parentName, depth) {
                 div.append(button);
 
                 childChecks.forEach(e => div.append(e));
+            } else {
+                div.classList.add('leaf');
             }
             return div
         });

@@ -1,0 +1,30 @@
+div:not(#root) {
+    margin-left: 15px;
+    padding: 3px;
+    border: 1px solid lightgrey;
+}
+
+.leaf {
+    background-color: #f4f4f4;
+}
+
+label {
+    font-size: 120%;
+    margin-right: 15px;
+}
+
+div.hide-child-boxes>div {
+    display: none
+}
+
+button.hide-button {
+    float: right;
+    margin-right: 15px;
+}
+button#save{
+    margin-left: 15px;
+    margin-bottom: 15px;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+}
