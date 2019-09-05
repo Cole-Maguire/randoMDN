@@ -14,11 +14,16 @@ async function getUrls() {
 async function saveFilteredUrls() {
     const urls = await getUrls();
 
-    const included = [/https:\/\/developer\.mozilla\.org\/en-US\/docs\/Web\/CSS.*/] //Example.
-    //will later be replaced by a setting
+    const savedWrapper = await browser.storage.sync.get('matchSlugs');
+    const saved = savedWrapper['matchSlugs'];
+    const rules = saved.map(s => {
+        return new RegExp(`https://developer\.mozilla\.org/en-US/docs${s}/.*`.replace('/', '\/'))
+    })
 
     browser.storage.local.set({
-        urls: urls.filter(url => included.some(pattern => pattern.test(url)))
+        urls: urls.filter(url => {
+            return rules.some(pattern => pattern.test(url))
+        })
     });
 
     return urls
@@ -26,5 +31,5 @@ async function saveFilteredUrls() {
 async function getRandomUrl() {
     const urlObj = await browser.storage.local.get('urls');
     const urls = urlObj["urls"];
-    return urls[Math.floor(Math.random() * urls.length)]  
+    return urls[Math.floor(Math.random() * urls.length)]
 }
