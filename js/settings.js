@@ -33,17 +33,19 @@ function recurseSave(nodes) {
         return []
     }
 }
-function saveSettings() {
+async function saveSettings() {
     console.log('a');
     const c = Array.from(document.querySelector('div#root').children)
-    const results = c.map(r => recurseSave(r.children)).flat();
+    const results = c.map(r => recurseSave(r.children));
 
-    browser.storage.sync.set({
+    await browser.storage.sync.set({
         matchSlugs: results
     });
 
     //Force the browser to refetch all matching urls
-    saveFilteredUrls();
+    await saveFilteredUrls();
+
+    alert('Changes have been saved');
 
 }
 function createElementFromMap(obj, parentName, depth) {
