@@ -28,6 +28,7 @@
     ],
     "permissions": [
         "*://developer.mozilla.org/*",
+        "*://www.iana.org/assignments/language-subtag-registry/language-subtag-registry",
         "webRequest",
         "storage",
         "activeTab"

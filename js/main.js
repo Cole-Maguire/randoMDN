@@ -1,5 +1,14 @@
 async function getUrls() {
-    let response = await fetch('https://developer.mozilla.org/sitemaps/en-US/sitemap.xml');
+    const wrapper = await browser.storage.sync.get('lang')
+    let lang;
+    if (Object.entries(wrapper).length === 0) {
+        lang = 'en-US'
+        browser.storage.sync.set({ 'lang': lang })
+    } else {
+        lang = wrapper.lang
+    }
+
+    let response = await fetch(`https://developer.mozilla.org/sitemaps/${lang}/sitemap.xml`);
     const text = await response.text();
 
     let parser = new DOMParser();
@@ -14,10 +23,11 @@ async function getUrls() {
 async function saveFilteredUrls() {
     const urls = await getUrls();
 
-    const savedWrapper = await browser.storage.sync.get('matchSlugs');
-    const saved = savedWrapper['matchSlugs'];
+    const wrapper = await browser.storage.sync.get(['matchSlugs', 'lang']);
+    const saved = wrapper.matchSlugs;
+    const lang = wrapper.lang;
     const rules = saved.map(s => {
-        return new RegExp(`https://developer\.mozilla\.org/en-US/docs${s}/.*`.replace('/', '\/'))
+        return new RegExp(`https://developer\.mozilla\.org/${lang}/docs${s}/.*`.replace('/', '\/'))
     })
 
     browser.storage.local.set({

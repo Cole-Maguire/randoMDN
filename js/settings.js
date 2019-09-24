@@ -8,6 +8,46 @@ function recurseSiteMap(obj, url) {
     return recurseSiteMap(obj[current], url.slice(1))
 }
 
+async function getIANA() {
+    //Fetch language codes and their descriptions from the source, regex out the relevant bits
+    const response = await fetch('https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry')
+    const text = await response.text()
+    return Object.fromEntries(Array.from(text.matchAll(/(?:Tag|Subtag):\s+(.*)\nDescription:\s+(.*)/g))
+        .map(match => [match[1], match[2]]))
+
+}
+
+async function getLanguages() {
+    //Get the languages that MDN supports and their names
+    const ianaLangs = await getIANA()
+    const response = await fetch('https://developer.mozilla.org/sitemap.xml');
+    const text = await response.text();
+
+    let parser = new DOMParser();
+    const sitemap = parser.parseFromString(text, 'application/xml');
+
+    const re = /https:\/\/developer.mozilla.org\/sitemaps\/([^/]+)\/sitemap.xml/
+
+    let mozillaLangs = Array.from(sitemap.querySelectorAll('loc'))
+        .map(node => re.exec(node.textContent))
+        .filter(match => match) //remove null matches
+        .map(([_, lang]) => lang) // match object is [fullText, matchGroup]
+
+    let languagesJoin = mozillaLangs.map(lang => {
+        let description = "" //default
+
+        if (lang in ianaLangs) {
+            description = ianaLangs[lang]
+        } else if (lang.split('-')[0] in ianaLangs) {
+            //Check if the language (but not script) is in the iana database
+            let [base, subScript] = lang.split('-')
+            description = `${ianaLangs[base]} (${subScript})`
+        }
+        return [lang, description]
+    })
+    return Object.fromEntries(languagesJoin)
+}
+
 async function createNestedSiteMap() {
     let urls = await getUrls();
 
@@ -33,8 +73,16 @@ function recurseSave(nodes) {
         return []
     }
 }
-async function saveSettings() {
-    console.log('a');
+
+async function saveRequeryUrl() {
+    let currentLang = document.querySelector('select#langs').value
+    await browser.storage.sync.set({ lang: currentLang, matchSlugs: {} })
+    //overwrite the matched sections when we change the labguage to prevent incompatabilities
+
+    renderTree() //recreate tree to match new language's pages
+}
+
+async function saveTree() {
     const c = Array.from(document.querySelector('div#root').children)
     const results = c.map(r => recurseSave(r.children));
 
@@ -102,8 +150,35 @@ function createElementFromMap(obj, parentName, depth) {
     }
 
 }
+async function addLangOptions() {
+    const languages = await getLanguages()
+    const select = document.querySelector("select#langs")
+    const wrapper = await browser.storage.sync.get('lang')
+    const currentLang = wrapper['lang']
 
-async function buildFromMap() {
+    Object.entries(languages)
+        .sort((a, b) => {
+            //sort by code
+            const x = a[0]
+            const y = b[0]
+            if (x > y) {
+                return 1
+            } else if (x < y) {
+                return -1
+            } else {
+                return 0
+            }
+        })
+        .forEach(([code, description]) => {
+            let option = document.createElement('option')
+            option.selected = code === currentLang
+            option.value = code
+            option.textContent = `${code} - ${description}`
+            select.appendChild(option)
+        })
+
+}
+async function renderTree() {
     const sitemap = await createNestedSiteMap();
     const root = document.querySelector("div#root");
 
@@ -113,10 +188,9 @@ async function buildFromMap() {
 
     const allChecks = Array.from(document.querySelectorAll('div#root input[type="checkbox"]'));
     const matchSlugsWrapper = await browser.storage.sync.get('matchSlugs');
+    const matchSlugs = matchSlugsWrapper.matchSlugs;
 
-    if (Object.entries(matchSlugsWrapper).length !== 0) {
-        const matchSlugs = matchSlugsWrapper.matchSlugs;
-
+    if (Object.entries(matchSlugs).length !== 0) {
         allChecks.forEach(checkbox => {
             if (matchSlugs.includes(checkbox.getAttribute('key'))) {
                 //We wrap this in an if to prevent overwriting subscetions
@@ -128,6 +202,12 @@ async function buildFromMap() {
     else {
         allChecks.forEach(element => element.checked = true)
     }
+}
+
+function renderPage() {
+    addLangOptions()
+    renderTree()
+
 }
 
 function hideButton(e) {
@@ -168,5 +248,6 @@ function indeterminateChecks(initalCheckbox) {
 
 document.querySelector("div#root").addEventListener('click', hideButton)
 document.querySelector("div#root").addEventListener('change', (e) => indeterminateChecks(e.target))
-document.addEventListener('DOMContentLoaded', buildFromMap);
-document.querySelector('button#save').addEventListener('click', saveSettings);
+document.addEventListener('DOMContentLoaded', renderPage);
+document.querySelector("select#langs").addEventListener('change', saveRequeryUrl);
+document.querySelector('button#save').addEventListener('click', saveTree);
