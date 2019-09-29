@@ -117,7 +117,7 @@ function createElementFromMap(obj, parentName, depth) {
 
             const label = document.createElement('label');
             label.htmlFor = key
-            label.innerHTML = key;
+            label.textContent = key;
             div.append(label);
 
             const checkbox = document.createElement('input');
@@ -182,7 +182,7 @@ async function renderTree() {
     const sitemap = await createNestedSiteMap();
     const root = document.querySelector("div#root");
 
-    root.innerHTML = '';
+    root.textContent = '';
     const elements = createElementFromMap(sitemap, '', 1);
     elements.forEach(element => root.append(element));
 

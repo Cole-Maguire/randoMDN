@@ -3,8 +3,11 @@ async function createButton() {
 
     const menu = document.querySelector("#main-nav>ul");
     const li = document.createElement("li");
+    const a = document.createElement("a");
     li.className = "nav-main-item";
-    li.innerHTML = `<a href="${url}">Random!</a>`;
+    a.href = url;
+    a.textContent = "Random!";
+    li.appendChild(a);
     menu.append(li);
 }
 createButton();
