@@ -24,19 +24,22 @@ async function saveFilteredUrls() {
     const urls = await getUrls();
 
     const wrapper = await browser.storage.sync.get(['matchSlugs', 'lang']);
-    const saved = wrapper.matchSlugs;
+    const slugs = wrapper.matchSlugs;
     const lang = wrapper.lang;
-    const rules = saved.map(s => {
-        return new RegExp(`https://developer\.mozilla\.org/${lang}/docs${s}/.*`.replace('/', '\/'))
-    })
 
-    browser.storage.local.set({
-        urls: urls.filter(url => {
-            return rules.some(pattern => pattern.test(url))
+    if (slugs) {
+        //If this is not undefined, then we have some saved rules, so only save urls that match them
+
+        const rules = slugs.map(slug => {
+            return new RegExp(`https://developer\.mozilla\.org/${lang}/docs${slug}/.*`.replace('/', '\/'))
         })
-    });
-
-    return urls
+        browser.storage.local.set({
+            urls: urls.filter(url => rules.some(pattern => pattern.test(url)))
+        });
+    } else {
+        //If we have no rules then just save all the urls. Default case unless the user changes their settings
+        browser.storage.local.set({ urls: urls })
+    }
 }
 async function getRandomUrl() {
     const urlObj = await browser.storage.local.get('urls');
