@@ -40,5 +40,9 @@
     "options_ui": {
         "page": "html/settings.html",
         "browser_style": true
-    }
+    },
+    "icons": {
+        "48": "icons/mdn_logo_48.png",
+        "96": "icon/mdn_logo_96.png"
+      }
 }
