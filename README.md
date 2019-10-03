@@ -6,6 +6,10 @@ Will add a button to all MDN web docs pages, as well as a button to your toolbar
 
 Built for fun and to learn more about security model/API's available to modern extensions (as well as so I might actually learn something when I'm bored on the internet.)
 
+## Install
+
+On Firefox, install from the [Add-on Marketplace](https://addons.mozilla.org/en-US/firefox/addon/randommdn/)
+
 ## Todo
 
-* Chrome support
+- Chrome support
