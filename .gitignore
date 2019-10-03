@@ -1,3 +1,6 @@
 node_modules
 .vscode
 web-ext-artifacts
+package.json
+package-lock.json
+.eslintrc.json
